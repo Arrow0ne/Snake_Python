@@ -1,0 +1,87 @@
+Here's the full game plan:
+
+---
+
+Snake Game — Development Plan
+
+Tech Stack
+- Language: Python
+- Library: Pygame
+
+Game Rules
+- Snake moves continuously in one direction
+- Player changes direction with WASD or arrow keys
+- Snake cannot reverse direction (e.g. going right → can't go left)
+- Eating food grows the snake by 1 segment
+- Hitting a wall = game over
+- Hitting your own body = game over
+
+---
+
+Stages
+
+Stage 1 — Window & Moving Square ✅
+- Open a Pygame window
+- Draw a rectangle
+- Move it around with WASD
+
+Stage 2 — Snake Body ✅
+- Replace single square with a list of positions
+- Each frame: add new head to front, remove tail
+- Snake appears to move smoothly across the grid
+
+Stage 3 — Grid-Based Movement ✅
+- Movement snaps to a tile grid (e.g. 20×20px tiles)
+- Snake moves one tile at a time on a timer (not every frame)
+- Prevents diagonal movement and keeps movement clean
+
+Stage 4 — Food ✅
+- Food spawns at a random grid position
+- Head collides with food → snake grows (skip tail removal)
+- New food spawns after eating
+
+Stage 5 — Collision Detection ✅
+- Head goes out of bounds → game over
+- Head overlaps own body → game over
+
+Stage 6 — Score ✅
+- Score increases each time food is eaten
+- Score displayed on screen using `pygame.font`
+
+Stage 7 — Speed Increase ✅
+- Every X points the move timer gets shorter
+- Snake moves faster as score grows
+- Cap speed at a maximum so it stays playable
+
+Stage 8 — Main Menu 
+- Title screen on launch
+- Press Enter to start
+- Shows high score
+
+Stage 9 — Game Over Screen
+- Overlay showing final score
+- "New high score!" if beaten
+- Press Enter to restart, Esc for menu
+
+Stage 10 — High Score
+- Save high score to a `.json` file
+- Loads on startup, saves when beaten
+
+Stage 11 — Polish (optional)
+- Retro pixel art sprites for head, body, food
+- Grid lines drawn on background
+- Sound effects on eat / game over
+
+---
+
+Controls
+|  Key  |       Action      |
+|-------|-------------------|
+| W / ↑ | Move up           |
+| S / ↓ | Move down         |
+| A / ← | Move left         |
+| D / → | Move right        |
+| Enter | Start / Restart   |
+|  Esc  | Menu              |
+
+---
