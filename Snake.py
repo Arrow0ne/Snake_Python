@@ -12,7 +12,12 @@ next_direction = "right"  # Key buffer so you dont overwrite it instantly when s
 TILE = 50
 score = 0
 tick = 2.5
+COLS = 12
+ROWS = 12
+OFFSET_X = (1200 - COLS * TILE) // 2
+OFFSET_Y = (720 - ROWS * TILE) // 2
 state = "menu"
+
 
 # load highscore from file
 def load_highscore():
@@ -21,16 +26,31 @@ def load_highscore():
             return json.load(f)["highscore"]
     return 0
 
+
 # save highscore to file
 def save_highscore(score):
     with open("highscore.json", "w") as f:
         json.dump({"highscore": score}, f)
 
+
 highscore = load_highscore()
 
-food_x = random.randint(0, (1200 // TILE) - 1) * TILE
-food_y = random.randint(0, (720 // TILE) - 1) * TILE
-body = [pygame.Vector2(600, 350), pygame.Vector2(550, 350), pygame.Vector2(500, 350)]
+
+# spawn food but not in the snake
+def spawn_food(body, COLS, ROWS):
+    while True:
+        food_x = random.randint(0, COLS - 1)
+        food_y = random.randint(0, ROWS - 1)
+        if pygame.Vector2(food_x, food_y) not in body:  # not in the snake
+            return food_x, food_y
+
+
+body = [
+    pygame.Vector2(COLS // 2, ROWS // 2),
+    pygame.Vector2(COLS // 2 - 1, ROWS // 2),
+    pygame.Vector2(COLS // 2 - 2, ROWS // 2),
+]
+food_x, food_y = spawn_food(body, COLS, ROWS)  # initial food spawn
 font = pygame.font.Font(None, 36)
 
 while running:
@@ -41,9 +61,34 @@ while running:
         if event.type == pygame.KEYDOWN:
             if state == "menu":
                 if event.key == pygame.K_RETURN:
-                    state = "playing"
+                    state = "sizeselect"
                 if event.key == pygame.K_x:  # close game
                     running = False
+            # sizeselect
+            elif state == "sizeselect":
+                if event.key == pygame.K_1:
+                    COLS, ROWS = 6, 6
+                    OFFSET_X = (1200 - COLS * TILE) // 2
+                    OFFSET_Y = (720 - ROWS * TILE) // 2
+                    body = [pygame.Vector2(COLS // 2, ROWS // 2), pygame.Vector2(COLS // 2 - 1, ROWS // 2), pygame.Vector2(COLS // 2 - 2, ROWS // 2)]
+                    food_x, food_y = spawn_food(body, COLS, ROWS)
+                    state = "playing"
+                if event.key == pygame.K_2:
+                    COLS, ROWS = 9, 9
+                    OFFSET_X = (1200 - COLS * TILE) // 2
+                    OFFSET_Y = (720 - ROWS * TILE) // 2
+                    body = [pygame.Vector2(COLS // 2, ROWS // 2), pygame.Vector2(COLS // 2 - 1, ROWS // 2), pygame.Vector2(COLS // 2 - 2, ROWS // 2)]
+                    food_x, food_y = spawn_food(body, COLS, ROWS)
+                    state = "playing"
+                if event.key == pygame.K_3:
+                    COLS, ROWS = 12, 12
+                    OFFSET_X = (1200 - COLS * TILE) // 2
+                    OFFSET_Y = (720 - ROWS * TILE) // 2
+                    body = [pygame.Vector2(COLS // 2, ROWS // 2), pygame.Vector2(COLS // 2 - 1, ROWS // 2), pygame.Vector2(COLS // 2 - 2, ROWS // 2)]
+                    food_x, food_y = spawn_food(body, COLS, ROWS)
+                    state = "playing"
+
+            # playing state
             elif state == "playing":
                 # KeyDetecting
                 if event.key == pygame.K_w and direction != "down":
@@ -54,6 +99,8 @@ while running:
                     next_direction = "down"
                 if event.key == pygame.K_d and direction != "left":
                     next_direction = "right"
+
+            # game over (dead, wall collision or snake collision)
             elif state == "gameover":
                 if event.key == pygame.K_RETURN:
                     # reset everything
@@ -61,9 +108,12 @@ while running:
                     tick = 2.5
                     direction = "right"
                     next_direction = "right"
-                    body = [pygame.Vector2(600, 350), pygame.Vector2(550, 350), pygame.Vector2(500, 350)]
-                    food_x = random.randint(0, (1200 // TILE) - 1) * TILE
-                    food_y = random.randint(0, (720 // TILE) - 1) * TILE
+                    body = [
+                        pygame.Vector2(COLS // 2, ROWS // 2),
+                        pygame.Vector2(COLS // 2 - 1, ROWS // 2),
+                        pygame.Vector2(COLS // 2 - 2, ROWS // 2),
+                    ]
+                    food_x, food_y = spawn_food(body, COLS, ROWS)
                     state = "playing"
                 if event.key == pygame.K_ESCAPE:
                     # reset everything and go to menu
@@ -71,13 +121,17 @@ while running:
                     tick = 2.5
                     direction = "right"
                     next_direction = "right"
-                    body = [pygame.Vector2(600, 350), pygame.Vector2(550, 350), pygame.Vector2(500, 350)]
-                    food_x = random.randint(0, (1200 // TILE) - 1) * TILE
-                    food_y = random.randint(0, (720 // TILE) - 1) * TILE
+                    body = [
+                        pygame.Vector2(COLS // 2, ROWS // 2),
+                        pygame.Vector2(COLS // 2 - 1, ROWS // 2),
+                        pygame.Vector2(COLS // 2 - 2, ROWS // 2),
+                    ]
+                    food_x, food_y = spawn_food(body, COLS, ROWS)
                     state = "menu"
                 if event.key == pygame.K_x:  # close game
                     running = False
-
+    
+    #drawing every state
     if state == "menu":
         screen.fill("black")
         title = font.render("SNAKE", True, "green")
@@ -85,11 +139,23 @@ while running:
         start = font.render("ENTER = play", True, "white")
         hi = font.render(f"High Score: {highscore}", True, "yellow")
         quit_text = font.render("X = Quit Game", True, "grey")
-        screen.blit(title, (550, 300))
-        screen.blit(creator, (525, 650))
-        screen.blit(start, (510, 400))
-        screen.blit(hi, (510, 450))
-        screen.blit(quit_text, (500, 500))
+       # zentriert mit get_rect(center=...)
+        screen.blit(title, title.get_rect(center = (600, 250)))
+        screen.blit(start, start.get_rect(center = (600, 350)))
+        screen.blit(hi, hi.get_rect(center = (600, 400)))
+        screen.blit(quit_text, quit_text.get_rect(center = (600, 450)))
+        screen.blit(creator, creator.get_rect(center = (600, 680)))
+
+    elif state == "sizeselect":
+        screen.fill("black")
+        title = font.render("SELECT SIZE:", True, "green")
+        op1 = font.render("1 - Small (6x6)", True, "white")
+        op2 = font.render("2 - Medium (9x9)", True, "white")
+        op3 = font.render("3 - Large (12x12)", True, "white")
+        screen.blit(title, title.get_rect(center = (600, 250)))
+        screen.blit(op1, op1.get_rect(center = (600, 340)))
+        screen.blit(op2, op2.get_rect(center = (600, 390)))
+        screen.blit(op3, op3.get_rect(center = (600, 440)))
 
     elif state == "playing":
         # KeyHandling
@@ -97,18 +163,18 @@ while running:
 
         new_head = pygame.Vector2(body[0])
         if direction == "up":
-            new_head.y -= TILE
+            new_head.y -= 1
         if direction == "down":
-            new_head.y += TILE
+            new_head.y += 1
         if direction == "left":
-            new_head.x -= TILE
+            new_head.x -= 1
         if direction == "right":
-            new_head.x += TILE
+            new_head.x += 1
 
         body.insert(0, new_head)
 
         # wall collision
-        if new_head.x < 0 or new_head.x >= 1200 or new_head.y < 0 or new_head.y >= 720:
+        if new_head.x < 0 or new_head.x >= COLS or new_head.y < 0 or new_head.y >= ROWS:
             if score > highscore:
                 highscore = score
                 save_highscore(score)
@@ -128,26 +194,33 @@ while running:
             # speed increases every Xth apple
             if score % 2 == 0:
                 tick = min(tick + 0.5, 10)
-            # new apple
-            food_x = random.randint(0, (1200 // TILE) - 1) * TILE
-            food_y = random.randint(0, (720 // TILE) - 1) * TILE
+            # new apple — use spawn_food so it doesnt spawn in the snake
+            food_x, food_y = spawn_food(body, COLS, ROWS)
         else:
             body.pop()  # normal movement
 
-        # fill the screen with a color to wipe away anything from last frame
-        screen.fill("green")
+        # fill screen black outside, green only play area
+        screen.fill("black")
+        pygame.draw.rect(screen, "lightgreen", (OFFSET_X, OFFSET_Y, COLS * TILE, ROWS * TILE))
 
-        # grid lines
-        for x in range(0, 1200, 50):
-            pygame.draw.line(screen, (30, 30, 30), (x, 0), (x, 720))
-        for y in range(0, 720, 50):
-            pygame.draw.line(screen, (30, 30, 30), (0, y), (1200, y))
+        # grid lines — only inside play area
+        for x in range(OFFSET_X, OFFSET_X + COLS * TILE + 1, TILE):
+            pygame.draw.line(screen, (30, 30, 30), (x, OFFSET_Y), (x, OFFSET_Y + ROWS * TILE))
+        for y in range(OFFSET_Y, OFFSET_Y + ROWS * TILE + 1, TILE):
+            pygame.draw.line(screen, (30, 30, 30), (OFFSET_X, y), (OFFSET_X + COLS * TILE, y))
 
-        pygame.draw.rect(screen, "red", (food_x, food_y, TILE, TILE))
+        # border around play area
+        pygame.draw.rect(screen, "green", (OFFSET_X, OFFSET_Y, COLS * TILE, ROWS * TILE), 3)
 
-        # rendering gamefield
+        # draw food
+        pygame.draw.rect(screen, "red", (OFFSET_X + food_x * TILE, OFFSET_Y + food_y * TILE, TILE, TILE))
+
+        # rendering snake
         for segment in body:
-            pygame.draw.rect(screen, "blue", (segment.x, segment.y, TILE, TILE))
+            if(segment == body[0]):
+                pygame.draw.rect(screen, "blue", (OFFSET_X + segment.x * TILE, OFFSET_Y + segment.y * TILE, TILE, TILE))
+            else:
+                pygame.draw.rect(screen, "purple", (OFFSET_X + segment.x * TILE, OFFSET_Y + segment.y * TILE, TILE, TILE))
 
         # showing score
         text = font.render(f"Score: {score}", True, "white")
@@ -160,11 +233,11 @@ while running:
         hi = font.render(f"High Score: {highscore}", True, "yellow")
         restart = font.render("ENTER = play again    ESC = menu", True, "white")
         quit_text = font.render("X = Quit Game", True, "grey")
-        screen.blit(over, (520, 280))
-        screen.blit(sc, (540, 340))
-        screen.blit(hi, (510, 390))
-        screen.blit(restart, (380, 450))
-        screen.blit(quit_text, (500, 500))
+        screen.blit(over, over.get_rect(center = (600, 280)))
+        screen.blit(sc, sc.get_rect(center = (600, 340)))
+        screen.blit(hi, hi.get_rect(center = (600, 390)))
+        screen.blit(restart, restart.get_rect(center = (600, 450)))
+        screen.blit(quit_text, quit_text.get_rect(center = (600, 500)))
 
     # flip() the display to put your work on screen
     pygame.display.flip()

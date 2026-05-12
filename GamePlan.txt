@@ -53,17 +53,17 @@ Stage 7 — Speed Increase ✅
 - Snake moves faster as score grows
 - Cap speed at a maximum so it stays playable
 
-Stage 8 — Main Menu 
+Stage 8 — Main Menu ✅
 - Title screen on launch
 - Press Enter to start
 - Shows high score
 
-Stage 9 — Game Over Screen
+Stage 9 — Game Over Screen ✅
 - Overlay showing final score
 - "New high score!" if beaten
 - Press Enter to restart, Esc for menu
 
-Stage 10 — High Score
+Stage 10 — High Score ✅
 - Save high score to a `.json` file
 - Loads on startup, saves when beaten
 

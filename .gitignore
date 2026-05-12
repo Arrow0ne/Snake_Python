@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Mac
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Game data i dont want to shar :)
+highscore.json
