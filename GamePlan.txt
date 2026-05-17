@@ -67,7 +67,7 @@ Stage 10 — High Score ✅
 - Save high score to a `.json` file
 - Loads on startup, saves when beaten
 
-Stage 11 — Polish (optional)
+Stage 11 — Polish (optional)✅
 - Retro pixel art sprites for head, body, food
 - Grid lines drawn on background
 - Sound effects on eat / game over
