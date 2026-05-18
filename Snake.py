@@ -40,6 +40,7 @@ current_size = "12x12"
 
 # ---------------- SPRITES / SOUNDS ---------------- #
 
+
 def load_sprite(path):
     if os.path.exists(path):
         img = pygame.image.load(path).convert_alpha()
@@ -70,7 +71,6 @@ if snd_death:
 if snd_menu_select:
     snd_menu_select.set_volume(1.0)
 
-# louder turn sound
 if snd_movement:
     snd_movement.set_volume(1.0)
 
@@ -122,16 +122,13 @@ else:
 
 # ---------------- HIGHSCORES ---------------- #
 
+
 def load_highscores():
     if os.path.exists("highscore.json"):
         with open("highscore.json") as f:
             return json.load(f)
 
-    return {
-        "6x6": 0,
-        "9x9": 0,
-        "12x12": 0
-    }
+    return {"6x6": 0, "9x9": 0, "12x12": 0}
 
 
 def save_highscores(highscores):
@@ -144,6 +141,7 @@ highscores = load_highscores()
 
 # ---------------- FOOD ---------------- #
 
+
 # prevents food from spawning inside the snake
 def spawn_food(body, COLS, ROWS):
 
@@ -151,7 +149,6 @@ def spawn_food(body, COLS, ROWS):
 
     for x in range(COLS):
         for y in range(ROWS):
-
             pos = pygame.Vector2(x, y)
 
             if pos not in body:
@@ -182,22 +179,17 @@ font = pygame.font.Font(None, 36)
 # ---------------- MAIN LOOP ---------------- #
 
 while running:
-
     # ---------- EVENTS ---------- #
 
     for event in pygame.event.get():
-
         if event.type == pygame.QUIT:
             running = False
 
         if event.type == pygame.KEYDOWN:
-
             # ---------- MENU ---------- #
 
             if state == "menu":
-
                 if event.key == pygame.K_RETURN:
-
                     if snd_menu_select:
                         snd_menu_select.play()
 
@@ -209,9 +201,7 @@ while running:
             # ---------- SIZE SELECT ---------- #
 
             elif state == "sizeselect":
-
                 if event.key == pygame.K_1:
-
                     if snd_menu_select:
                         snd_menu_select.play()
 
@@ -221,7 +211,6 @@ while running:
                     TILE = 70
 
                 if event.key == pygame.K_2:
-
                     if snd_menu_select:
                         snd_menu_select.play()
 
@@ -231,7 +220,6 @@ while running:
                     TILE = 55
 
                 if event.key == pygame.K_3:
-
                     if snd_menu_select:
                         snd_menu_select.play()
 
@@ -242,7 +230,6 @@ while running:
                     TILE = 42
 
                 if event.key in [pygame.K_1, pygame.K_2, pygame.K_3]:
-
                     OFFSET_X = (SCREEN_W - COLS * TILE) // 2
                     OFFSET_Y = (SCREEN_H - ROWS * TILE) // 2
 
@@ -262,10 +249,8 @@ while running:
             # ---------- PLAYING ---------- #
 
             elif state == "playing":
-
                 # max 2 buffered inputs
                 if len(input_queue) < 2:
-
                     last_dir = input_queue[-1] if input_queue else direction
 
                     if event.key == pygame.K_w and last_dir != "down":
@@ -283,9 +268,7 @@ while running:
             # ---------- GAME OVER ---------- #
 
             elif state == "gameover":
-
                 if event.key == pygame.K_RETURN:
-
                     if snd_menu_select:
                         snd_menu_select.play()
 
@@ -306,7 +289,6 @@ while running:
                     state = "playing"
 
                 if event.key == pygame.K_ESCAPE:
-
                     if snd_menu_select:
                         snd_menu_select.play()
 
@@ -324,7 +306,6 @@ while running:
     # ---------- MENU DRAW ---------- #
 
     if state == "menu":
-
         screen.fill("black")
 
         title = font.render("SNAKE", True, "green")
@@ -349,7 +330,6 @@ while running:
     # ---------- SIZE SELECT DRAW ---------- #
 
     elif state == "sizeselect":
-
         screen.fill("black")
 
         title = font.render("SELECT SIZE:", True, "green")
@@ -367,16 +347,13 @@ while running:
     # ---------- GAME ---------- #
 
     elif state == "playing":
-
         now = pygame.time.get_ticks()
 
         if now - last_move >= move_delay:
-
             last_move = now
 
             # buffered turning system
             if input_queue:
-
                 new_direction = input_queue.pop(0)
 
                 # sound only when direction actually changes
@@ -404,12 +381,11 @@ while running:
             # ---------- COLLISIONS ---------- #
 
             if (
-                new_head.x < 0 or
-                new_head.x >= COLS or
-                new_head.y < 0 or
-                new_head.y >= ROWS
+                new_head.x < 0
+                or new_head.x >= COLS
+                or new_head.y < 0
+                or new_head.y >= ROWS
             ):
-
                 if snd_death:
                     snd_death.play()
 
@@ -420,7 +396,6 @@ while running:
                 state = "gameover"
 
             if new_head in body[1:]:
-
                 if snd_death:
                     snd_death.play()
 
@@ -433,7 +408,6 @@ while running:
             # ---------- APPLE ---------- #
 
             if new_head.x == food_x and new_head.y == food_y:
-
                 if snd_eat:
                     snd_eat.play()
 
@@ -447,7 +421,6 @@ while running:
 
                 # if map is completely filled -> win/gameover
                 if food_x is None and food_y is None:
-
                     if score > highscores[current_size]:
                         highscores[current_size] = score
                         save_highscores(highscores)
@@ -463,7 +436,6 @@ while running:
 
         for gx in range(COLS):
             for gy in range(ROWS):
-
                 draw_x = OFFSET_X + gx * TILE
                 draw_y = OFFSET_Y + gy * TILE
 
@@ -472,79 +444,51 @@ while running:
                     screen.blit(grass, (draw_x, draw_y))
 
                 else:
-                    pygame.draw.rect(
-                        screen,
-                        "lightgreen",
-                        (draw_x, draw_y, TILE, TILE)
-                    )
+                    pygame.draw.rect(screen, "lightgreen", (draw_x, draw_y, TILE, TILE))
 
         # grid
         for x in range(OFFSET_X, OFFSET_X + COLS * TILE + 1, TILE):
-
             pygame.draw.line(
-                screen,
-                (30, 30, 30),
-                (x, OFFSET_Y),
-                (x, OFFSET_Y + ROWS * TILE)
+                screen, (30, 30, 30), (x, OFFSET_Y), (x, OFFSET_Y + ROWS * TILE)
             )
 
         for y in range(OFFSET_Y, OFFSET_Y + ROWS * TILE + 1, TILE):
-
             pygame.draw.line(
-                screen,
-                (30, 30, 30),
-                (OFFSET_X, y),
-                (OFFSET_X + COLS * TILE, y)
+                screen, (30, 30, 30), (OFFSET_X, y), (OFFSET_X + COLS * TILE, y)
             )
 
         pygame.draw.rect(
-            screen,
-            "green",
-            (OFFSET_X, OFFSET_Y, COLS * TILE, ROWS * TILE),
-            3
+            screen, "green", (OFFSET_X, OFFSET_Y, COLS * TILE, ROWS * TILE), 3
         )
 
         # ---------- FOOD ---------- #
 
         if food_x is not None and food_y is not None:
-
             if img_apple:
-
                 apple_scaled = pygame.transform.scale(img_apple, (TILE, TILE))
 
                 screen.blit(
-                    apple_scaled,
-                    (OFFSET_X + food_x * TILE, OFFSET_Y + food_y * TILE)
+                    apple_scaled, (OFFSET_X + food_x * TILE, OFFSET_Y + food_y * TILE)
                 )
 
             else:
-
                 pygame.draw.rect(
                     screen,
                     "red",
-                    (
-                        OFFSET_X + food_x * TILE,
-                        OFFSET_Y + food_y * TILE,
-                        TILE,
-                        TILE
-                    )
+                    (OFFSET_X + food_x * TILE, OFFSET_Y + food_y * TILE, TILE, TILE),
                 )
 
         # ---------- SNAKE ---------- #
 
         for i, segment in enumerate(body):
-
             x = OFFSET_X + segment.x * TILE
             y = OFFSET_Y + segment.y * TILE
 
             # HEAD
             if i == 0:
-
                 if head_sprites:
-
                     head_scaled = pygame.transform.scale(
-                        head_sprites[direction],
-                        (TILE, TILE)
+                        head_sprites[direction], (TILE, TILE)
                     )
 
                     screen.blit(head_scaled, (x, y))
@@ -554,7 +498,6 @@ while running:
 
             # TAIL
             elif i == len(body) - 1:
-
                 prev = body[i - 1]
 
                 dx = int(segment.x - prev.x)
@@ -564,14 +507,12 @@ while running:
                     (0, -1): "up",
                     (0, 1): "down",
                     (-1, 0): "left",
-                    (1, 0): "right"
+                    (1, 0): "right",
                 }
 
                 if tail_sprites:
-
                     tail_scaled = pygame.transform.scale(
-                        tail_sprites[tail_dir[(dx, dy)]],
-                        (TILE, TILE)
+                        tail_sprites[tail_dir[(dx, dy)]], (TILE, TILE)
                     )
 
                     screen.blit(tail_scaled, (x, y))
@@ -581,7 +522,6 @@ while running:
 
             # BODY
             else:
-
                 prev = body[i - 1]
                 nxt = body[i + 1]
 
@@ -591,10 +531,9 @@ while running:
                 dx_out = int(nxt.x - segment.x)
                 dy_out = int(nxt.y - segment.y)
 
-                is_turn = (dx_in != dx_out or dy_in != dy_out)
+                is_turn = dx_in != dx_out or dy_in != dy_out
 
                 if is_turn and turn_sprites:
-
                     if (dx_in == 1 and dy_out == 1) or (dy_in == -1 and dx_out == -1):
                         angle = -90
 
@@ -608,24 +547,19 @@ while running:
                         angle = 180
 
                     turn_scaled = pygame.transform.scale(
-                        turn_sprites[angle],
-                        (TILE, TILE)
+                        turn_sprites[angle], (TILE, TILE)
                     )
 
                     screen.blit(turn_scaled, (x, y))
 
                 else:
-
                     if body_h and body_v:
-
                         if dx_in != 0:
-
                             body_scaled = pygame.transform.scale(body_v, (TILE, TILE))
 
                             screen.blit(body_scaled, (x, y))
 
                         else:
-
                             body_scaled = pygame.transform.scale(body_h, (TILE, TILE))
 
                             screen.blit(body_scaled, (x, y))
@@ -638,7 +572,7 @@ while running:
         text = font.render(
             f"Score: {score}    Best: {highscores[current_size]}    Map: {current_size}",
             True,
-            "white"
+            "white",
         )
 
         screen.blit(text, text.get_rect(center=(SCREEN_W // 2, 20)))
@@ -646,7 +580,6 @@ while running:
     # ---------- GAME OVER ---------- #
 
     elif state == "gameover":
-
         screen.fill("black")
 
         over = font.render("GAME OVER", True, "red")
@@ -654,16 +587,10 @@ while running:
         sc = font.render(f"Score: {score}", True, "white")
 
         hi = font.render(
-            f"Best on {current_size}: {highscores[current_size]}",
-            True,
-            "yellow"
+            f"Best on {current_size}: {highscores[current_size]}", True, "yellow"
         )
 
-        restart = font.render(
-            "ENTER = play again    ESC = menu",
-            True,
-            "white"
-        )
+        restart = font.render("ENTER = play again    ESC = menu", True, "white")
 
         quit_text = font.render("X = Quit Game", True, "grey")
 
