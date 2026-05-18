@@ -112,14 +112,6 @@ If the file is missing, it will be created automatically.
 
 ## 🚀 Author
 
-Made by **Awack**
+Made by **Artur Wacker**
 
 ---
-
-If you want, I can also:
-
-* make it look like a **Steam-quality README**
-* add badges (Python version, status, etc.)
-* or write a short GitHub bio/description for your repo
-
-Just say 👍
